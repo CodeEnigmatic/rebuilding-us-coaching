@@ -1,0 +1,158 @@
+/* Base styling */
+body {
+  margin: 0;
+  font-family: Georgia, serif;
+  background: #1e1b18;
+  color: #130c02;
+}
+
+.page-shell {
+  min-height: 100vh;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+}
+
+
+
+.hero {
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 15, 10, 0.4);
+}
+
+.overlay {
+  position: relative;
+  text-align: center;
+  padding: 20px 30px;
+  transform: translateY(-30px);
+}
+
+.overlay h1 {
+  font-size: 1.8rem;
+  margin: 0 auto;
+  max-width: 850px;
+  line-height: 1.2;
+  color: #f5ded3;
+}
+
+@media (max-width: 768px) {
+  .overlay h1 {
+    font-size: 1.3rem;
+    white-space: normal;
+  }
+}
+
+.section {
+  padding: 80px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.section h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #f5e6d3;
+}
+
+.section p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  color: #d6c3a3;
+}
+
+.section {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 20px;
+  text-align: center;
+  color: #f5e6d3;
+}s
+
+.burn-out-section {
+  text-align: center;
+  background: #6d6d6cc1;
+  color: #d3ebf5;
+}
+
+.burn-out-section h2,
+.anchor-line {
+  color: #000000;
+
+  -webkit-text-stroke: 1.2px rgba(247, 243, 6, 0.9);
+
+  text-shadow:
+  0 0 8px rgba(143, 195, 255, 0.9)
+  0 0 20px rgba(111, 168, 220, 0.8)
+  0 0 40px rgba(111, 168, 228, 0.6)
+  0 4px 12px rgba(0, 0, 0, 1);
+
+  font-weight: 700;
+
+
+  font-size: 2.3rem;
+  line-height: 1.2;
+  margin-bottom: 36px;
+  color: #06427b;
+}
+
+.burn-out-section p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  margin: 0 0 18px;
+  color: #6fa8dc;
+}
+
+.burn-out-section .anchor-line {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 30px 0 24px;
+}
+
+.burn-out-section .closing-lines {
+  font-size: 1.35rem;
+  line-height: 1.9;
+  color: #f5e6d3;
+  margin-top: 28px;
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: 70px 20px;
+  }
+
+  .burn-out-section h2 {
+    font-size: 1.8rem;
+  }
+
+  .burn-out-section p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .burn-out-section .anchor-line {
+    font-size: 1.3rem;
+  }
+
+  .burn-out-section .closing-lines {
+    font-size: 1.15rem;
+  }
+}
