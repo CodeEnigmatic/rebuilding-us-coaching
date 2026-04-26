@@ -156,3 +156,67 @@ body {
     font-size: 1.15rem;
   }
 }
+
+.youtube-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 24px;
+
+  background: linear-gradient(135deg, #ff0000, #cc0000);
+  color: #fff !important;
+
+  font-weight: 600;
+  text-decoration: none !important;
+  border-radius: 8px;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+
+  transition: all 0.2s ease;
+}
+
+
+
+.youtube-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+}
+
+
+.fade-line {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-line.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.anchor-line,
+.closing-lines {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.anchor-line.show,
+.closing-lines.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+.anchor-line,
+.closing-lines {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 2s ease, transform 2s ease;
+}
+
+.anchor-line.show,
+.closing-lines.show {
+  opacity: 1;
+  transform: translateY(0);
+}
