@@ -3,7 +3,7 @@ import hero from './assets/austellarlife.jpg'
 import identityImage from './assets/austellar-identity.jpg'
 import individualImage from './assets/austellar.individual.jpg'
 import relationshipImage from './assets/austellar.relationship.jpg'
-import communityImage from './assets/austellar.community.jpg'
+import communityImage from './assets/Austellarcommunity.jpeg'
 import siteBG from './assets/aulogo.jpg'
 import bookCover from './assets/book-cover.jpeg'
 import gymShirtImage from './assets/gymislife.jpg'
@@ -185,7 +185,7 @@ export function App() {
             </article>
 
             <article id="community" className="pathway-panel">
-              <img src={communityImage} alt="AU-STELLAR Community framework: leadership, education, collaboration, organizations, innovation, and community." />
+              <img src={communityImage} alt="AU-STELLAR Community Framework: service, leadership, mentorship, teamwork, culture, stewardship, unity, impact, and legacy." />
               <div className="pathway-invitation">
                 <p>Ready to lead, connect, and build a stronger future?</p>
                 <a href="#community-membership" className="primary-button">Join Community Training</a>
