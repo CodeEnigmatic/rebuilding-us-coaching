@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Private learning notes (public summaries live in docs/learning-log)
+/student-learning-log/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
