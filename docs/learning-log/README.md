@@ -25,6 +25,7 @@ The entries distinguish completed functionality from planned work. They avoid cu
 
 1. [Phase 1 — Content and Access Architecture](./001-phase-1-content-architecture.md)
 2. [Backend Phase 1 — Supabase Security Foundation](./002-supabase-security-foundation.md)
+3. [Secure Client Portal Phase 1](./003-secure-client-portal-phase-1.md)
 
 ## Documentation approach
 

@@ -15,12 +15,45 @@ The first migration creates:
 
 The migration has not been applied to a hosted project yet.
 
+The second migration adds the client portal's manual access workflow, administrator-only database functions, onboarding fields, and append-only audit events.
+
 ## Local frontend configuration
 
 1. Create a Supabase Free project.
 2. Copy `.env.example` to `.env.local`.
 3. Replace the placeholders with the Project URL and publishable key from the Supabase Connect panel.
 4. Never put a secret key or service-role key in a `VITE_` variable.
+
+## Authentication configuration
+
+In the Supabase Authentication URL settings, configure:
+
+- Site URL: `https://liveaustellarlife.com`
+- Redirect URL: `https://liveaustellarlife.com/?portal=dashboard`
+- Redirect URL: `https://liveaustellarlife.com/?portal=update-password`
+
+Keep email confirmation enabled for production registration.
+
+## First administrator
+
+Register and verify the intended administrator account first. Then use the Supabase SQL editor once to promote that specific UUID:
+
+```sql
+update public.user_roles
+set role = 'admin'
+where user_id = '<verified-user-uuid>';
+```
+
+Do not build a public “make me admin” workflow. Subsequent role-management functionality should use a separately reviewed administrator function with audit logging.
+
+## GitHub Pages deployment variables
+
+The GitHub Actions build needs these repository variables or environment values:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+They are publishable browser configuration, not privileged secrets. Secret/service-role credentials still must not be added.
 
 Vite embeds every `VITE_` value in the browser bundle. The publishable key identifies the project but does not grant unrestricted access. Row-Level Security policies authorize each database operation.
 
@@ -48,6 +81,20 @@ The migration can be applied after a Supabase project is created and linked. Bef
 - A signed-in user cannot assign a role or membership.
 - The tier helper respects cumulative access and expiration dates.
 
+Use [the Phase 1 security test checklist](../docs/PORTAL_PHASE_1_SECURITY_TESTS.md) before production use.
+
 ## Administrative writes
 
 The frontend intentionally has no permission to create roles or memberships. Those records must later be written by a trusted server process, such as a verified Stripe webhook or a carefully protected administrative function.
+
+## Client support email
+
+Apply `202608160001_client_support_requests.sql`, then deploy the authenticated `send-support-request` Edge Function. Configure these Edge Function secrets before deployment:
+
+```text
+RESEND_API_KEY=<Resend API key>
+ADMIN_SUPPORT_EMAIL=Liveaustellarlife@gmail.com
+SUPPORT_FROM_EMAIL=AU-STELLAR LIFE <support@your-verified-domain.example>
+```
+
+The Resend sending domain must be verified. Never add the Resend key to a `VITE_` variable or frontend file. The function authenticates the client, stores the request for the administrator inbox, and sends an email with the client's account address as the reply-to address.

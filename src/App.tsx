@@ -84,6 +84,7 @@ const navItems = [
   { label: 'Watch', href: '#youtube' },
   { label: 'Contact', href: '#contact' },
   { label: 'Join Academy', href: '#membership' },
+  { label: 'Client Portal', href: '/?portal=login' },
 ]
 
 export function App() {
@@ -346,7 +347,7 @@ export function App() {
                 workbooks, and lesson scripts for video production.
               </p>
             </div>
-            <a href="mailto:your-email@example.com?subject=AU-STELLAR LIFE Academy Inquiry" className="contact-button">
+            <a href="mailto:Liveaustellarlife@gmail.com?subject=AU-STELLAR LIFE Academy Inquiry" className="contact-button">
               Contact AU-STELLAR LIFE
             </a>
           </div>
