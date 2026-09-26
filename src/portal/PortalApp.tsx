@@ -224,11 +224,18 @@ function ClientDashboard({ session, context }: { session: Session; context: Memb
   </div></PortalShell>
 }
 
-function AdminDashboard() {
+function AdminDashboard({ currentUserId }: { currentUserId: string }) {
   const [clients, setClients] = useState<AdminClient[]>([])
   const [supportRequests, setSupportRequests] = useState<SupportRequest[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [selectedTiers, setSelectedTiers] = useState<Record<string, MembershipTier>>({})
+  const [showInviteForm, setShowInviteForm] = useState(false)
+  const [inviteName, setInviteName] = useState('')
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteTier, setInviteTier] = useState<MembershipTier>('individual')
+  const [inviteStatus, setInviteStatus] = useState('')
+  const [inviteSending, setInviteSending] = useState(false)
   async function load() { setLoading(true); const { data, error: requestError } = await getSupabaseClient().rpc('admin_list_clients'); setError(requestError?.message ?? ''); setClients((data ?? []) as AdminClient[]); setLoading(false) }
   useEffect(() => {
     void getSupabaseClient().rpc('admin_list_clients').then(({ data, error: requestError }) => {
@@ -238,9 +245,29 @@ function AdminDashboard() {
     })
     void getSupabaseClient().from('support_requests').select('id,email,display_name,message,status,created_at').order('created_at', { ascending: false }).limit(50).then(({ data }) => setSupportRequests((data ?? []) as SupportRequest[]))
   }, [])
-  async function grant(userId: string, tier: MembershipTier) { const { error: requestError } = await getSupabaseClient().rpc('admin_grant_membership', { target_user_id: userId, granted_tier: tier, grant_ends_at: null }); if (requestError) setError(requestError.message); else await load() }
+  async function inviteClient(event: FormEvent) {
+    event.preventDefault(); setInviteSending(true); setError(''); setInviteStatus('')
+    const { data, error: requestError } = await getSupabaseClient().functions.invoke('invite-client', {
+      body: { displayName: inviteName, email: inviteEmail, tier: inviteTier },
+    })
+    if (requestError || data?.error) {
+      setError(data?.error ?? requestError?.message ?? 'The invitation could not be sent.')
+      if (data?.invitationSent) await load()
+    } else {
+      setInviteStatus(`Invitation sent to ${inviteEmail.trim().toLowerCase()} with ${inviteTier} access.`)
+      setInviteName(''); setInviteEmail(''); setInviteTier('individual'); setShowInviteForm(false)
+      await load()
+    }
+    setInviteSending(false)
+  }
+  async function grant(userId: string, tier: MembershipTier) {
+    setError(''); setInviteStatus('')
+    const { error: requestError } = await getSupabaseClient().rpc('admin_grant_membership', { target_user_id: userId, granted_tier: tier, grant_ends_at: null })
+    if (requestError) setError(requestError.message === 'invalid membership target' ? 'You cannot change membership access for the account you are currently signed into.' : requestError.message)
+    else await load()
+  }
   async function revoke(id: string) { const { error: requestError } = await getSupabaseClient().rpc('admin_revoke_membership', { target_membership_id: id }); if (requestError) setError(requestError.message); else await load() }
-  return <PortalShell><div className="portal-dashboard"><section className="portal-card admin-panel"><p className="eyebrow">Administrator</p><h1>Client access</h1><p>Manual access changes are enforced and audited by PostgreSQL.</p>{error && <p className="portal-alert error" role="alert">{error}</p>}{loading ? <p>Loading clients…</p> : clients.length === 0 ? <p>No client accounts have registered yet.</p> : <div className="client-list">{clients.map((client) => <article key={client.user_id}><div><strong>{client.display_name ?? 'Unnamed client'}</strong><small>{client.email ?? client.user_id}</small><span>{client.tier ? `${client.tier} · ${client.membership_status}` : 'No tier'}</span></div><div className="admin-actions"><select aria-label={`Tier for ${client.email}`} defaultValue="individual" id={`tier-${client.user_id}`}><option value="individual">Individual</option><option value="relationship">Relationship</option><option value="community">Community</option></select><button onClick={() => grant(client.user_id, (document.querySelector(`#tier-${client.user_id}`) as HTMLSelectElement).value as MembershipTier)}>Grant</button>{client.membership_id && <button className="danger-button" onClick={() => revoke(client.membership_id!)}>Revoke</button>}</div></article>)}</div>}<a href={portalUrl('dashboard')} className="portal-text-link">Return to dashboard</a></section><section className="portal-card"><p className="eyebrow">Client inbox</p><h2>Questions and support needs</h2>{supportRequests.length === 0 ? <p>No client messages yet.</p> : <div className="support-request-list">{supportRequests.map((request) => <article key={request.id}><div><strong>{request.display_name ?? request.email}</strong><small>{request.email} · {new Date(request.created_at).toLocaleString()}</small></div><p>{request.message}</p><span>{request.status}</span></article>)}</div>}</section></div></PortalShell>
+  return <PortalShell><div className="portal-dashboard"><section className="portal-card admin-panel"><p className="eyebrow">Administrator</p><h1>Client access</h1><p>Invite clients without handling their passwords. Membership changes are enforced and audited by PostgreSQL.</p><button className="primary-button invite-client-toggle" type="button" onClick={() => { setShowInviteForm((current) => !current); setError(''); setInviteStatus('') }}>{showInviteForm ? 'Cancel invitation' : 'Invite a client'}</button>{showInviteForm && <form className="portal-form invite-client-form" onSubmit={inviteClient}><label>Client name<input required maxLength={100} autoComplete="name" value={inviteName} onChange={(event) => setInviteName(event.target.value)} /></label><label>Client email<input required type="email" maxLength={254} autoComplete="email" value={inviteEmail} onChange={(event) => setInviteEmail(event.target.value)} /></label><label>Membership tier<select value={inviteTier} onChange={(event) => setInviteTier(event.target.value as MembershipTier)}><option value="individual">Individual — Tier 1</option><option value="relationship">Relationship — Tier 2</option><option value="community">Community — Tier 3</option></select></label><small>The client will receive a secure link and choose their own password.</small><button className="primary-button" disabled={inviteSending}>{inviteSending ? 'Sending invitation…' : 'Send invitation and grant access'}</button></form>}{error && <p className="portal-alert error" role="alert">{error}</p>}{inviteStatus && <p className="portal-alert success" role="status">{inviteStatus}</p>}{loading ? <p>Loading clients…</p> : clients.length === 0 ? <p>No client accounts have registered yet.</p> : <div className="client-list">{clients.map((client) => { const isCurrentUser = client.user_id === currentUserId; const selectedTier = selectedTiers[client.user_id] ?? client.tier ?? 'individual'; return <article key={client.user_id}><div><strong>{client.display_name ?? 'Unnamed client'}</strong><small>{client.email ?? client.user_id}</small><span>{isCurrentUser ? 'Signed-in administrator account' : client.tier ? `${client.tier} · ${client.membership_status}` : 'No tier'}</span></div>{isCurrentUser ? <small className="admin-self-note">Manage client access from a separate administrator account.</small> : <div className="admin-actions"><select aria-label={`Tier for ${client.email}`} value={selectedTier} onChange={(event) => setSelectedTiers((current) => ({ ...current, [client.user_id]: event.target.value as MembershipTier }))}><option value="individual">Individual</option><option value="relationship">Relationship</option><option value="community">Community</option></select><button onClick={() => grant(client.user_id, selectedTier)}>Grant</button>{client.membership_id && <button className="danger-button" onClick={() => revoke(client.membership_id!)}>Revoke</button>}</div>}</article> })}</div>}<a href={portalUrl('dashboard')} className="portal-text-link">Return to dashboard</a></section><section className="portal-card"><p className="eyebrow">Client inbox</p><h2>Questions and support needs</h2>{supportRequests.length === 0 ? <p>No client messages yet.</p> : <div className="support-request-list">{supportRequests.map((request) => <article key={request.id}><div><strong>{request.display_name ?? request.email}</strong><small>{request.email} · {new Date(request.created_at).toLocaleString()}</small></div><p>{request.message}</p><span>{request.status}</span></article>)}</div>}</section></div></PortalShell>
 }
 
 export function PortalApp() {
@@ -279,7 +306,7 @@ export function PortalApp() {
     return <PortalShell><StatePanel title="Access denied"><p>Your account does not have administrator permission.</p><a href={portalUrl('dashboard')}>Return to dashboard</a></StatePanel></PortalShell>
   }
   if (route === 'login' || route === 'register' || route === 'forgot-password' || route === 'update-password') return <AuthForm mode={route} />
-  if (route === 'admin') return <AdminDashboard />
+  if (route === 'admin' && session) return <AdminDashboard currentUserId={session.user.id} />
   if ((route === 'academy' || route === 'course' || route === 'lesson' || route === 'assessment' || route === 'exercise') && session && context) return <PortalShell><CourseExperience route={route} userId={session.user.id} tier={context.tier} membershipStatus={context.status} /></PortalShell>
   return session && context ? <ClientDashboard session={session} context={context} /> : <PortalShell><StatePanel title="Account setup incomplete"><p>Your profile could not be loaded.</p></StatePanel></PortalShell>
 }

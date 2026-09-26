@@ -1277,6 +1277,7 @@ html {
 
 .portal-form input,
 .portal-form textarea,
+.portal-form select,
 .admin-actions select {
   box-sizing: border-box;
   width: 100%;
@@ -1290,6 +1291,24 @@ html {
 
 .portal-form textarea {
   resize: vertical;
+}
+
+.invite-client-toggle {
+  margin: 0.5rem 0 1rem;
+}
+
+.invite-client-form {
+  max-width: 34rem;
+  margin-bottom: 1.25rem;
+  padding: 1.1rem;
+  border: 1px solid rgba(245, 210, 122, 0.28);
+  border-radius: 0.8rem;
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.admin-self-note {
+  max-width: 18rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .portal-form button,

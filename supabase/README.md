@@ -87,6 +87,22 @@ Use [the Phase 1 security test checklist](../docs/PORTAL_PHASE_1_SECURITY_TESTS.
 
 The frontend intentionally has no permission to create roles or memberships. Those records must later be written by a trusted server process, such as a verified Stripe webhook or a carefully protected administrative function.
 
+## Client invitations
+
+Deploy the authenticated `invite-client` Edge Function to enable **Invite a client** in the administrator portal:
+
+```sh
+npx supabase@latest functions deploy invite-client
+```
+
+The function verifies the caller's session and administrator role before using Supabase Auth's server-only invitation API. It then grants the selected tier through `admin_grant_membership`, preserving the existing PostgreSQL audit event. The secret key is supplied automatically inside hosted Edge Functions and must never be added to a frontend or `VITE_` variable.
+
+Production invitations also require custom SMTP under **Supabase Dashboard → Authentication → Emails → SMTP Settings**. The built-in Supabase mail service sends only to project-team addresses. Use a verified transactional sending domain and ensure this redirect remains allowed:
+
+```text
+https://liveaustellarlife.com/?portal=update-password
+```
+
 ## Client support email
 
 Apply `202608160001_client_support_requests.sql`, then deploy the authenticated `send-support-request` Edge Function. Configure these Edge Function secrets before deployment:
