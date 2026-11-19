@@ -1,0 +1,13 @@
+{
+  "profile": "Example network (fictional)",
+  "date": "2026-11-18",
+  "interface": "example0",
+  "ip": "192.0.2.10",
+  "mask": "255.255.255.0",
+  "prefix": "24",
+  "network": "192.0.2.0",
+  "broadcast": "192.0.2.255",
+  "gateway": "192.0.2.1",
+  "dns": "192.0.2.53",
+  "notes": "Documentation-only example. Replace locally with observations; these addresses are not a working network configuration."
+}

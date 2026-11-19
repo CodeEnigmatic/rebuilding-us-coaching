@@ -1,0 +1,14 @@
+private/
+__pycache__/
+fieldwork-artifact.txt
+# Browser-exported records and packet captures belong outside source control.
+fieldwork-progress-*.json
+private-network-journal-*.json
+private-network-report-*.txt
+office-simulator-evidence*.json
+*.pcap
+*.pcapng
+backups/
+exports/
+.env
+.env.*
